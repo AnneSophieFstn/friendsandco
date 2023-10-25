@@ -6,13 +6,17 @@ Créer une application sécurisée qui permet de gérer la gestion des tickets c
 
 ## Fonctionnalités
 
-- Enregistrement utilisateur (**BACKEND - OK**)
-- Connexion utilisateur (**BACKEND - OK**)
-- Page accueil (si pas connecté redirige vers login) (**NON**)
-- Ajouter les autres utilisateurs en amis (**BACKEND - OK // FRONTEND uniquement en BRUT**)
-- Voir les demandes en cours que j'ai faite (**BACKEND - OK // FRONTEND uniquement en BRUT**)
-- Voir les demandes que les autres ont fait (pouvoir l'accepter ou refuser) (**BACKEND - OK // FRONTEND uniquement en BRUT**)
-- Voir les amis (**BACKEND - OK // FRONTEND uniquement en BRUT**)
+- Enregistrement utilisateur (**BACKEND//FRONTEND - OK**)
+- Connexion utilisateur (**BACKEND//FRONTEND - OK**)
+- Page accueil (si pas connecté redirige vers login) (**OK**)
+- Ajouter les autres utilisateurs en amis (**BACKEND//FRONTEND - OK**)
+- Voir les demandes en cours que j'ai faite (**BACKEND//FRONTEND - OK**)
+- Voir les demandes que les autres ont fait (pouvoir l'accepter ou refuser) (**BACKEND//FRONTEND - OK**)
+- Voir les amis (**BACKEND//FRONTEND - OK**)
+
+- Supprimer les amis
+- Revoir le token
+- Refresh after CRUD
 
 **TOUTE LA PARTIE AUTHENTIFICATION N'EST PAS OPERATIONNEL SUR LE FRONT**
 
