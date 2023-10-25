@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import urlAPI from "./services/axiosConfig";
 import { Route, Router, Navigate, Routes } from "react-router-dom"; // Pour la redirection après la connexion
-import { setToken, setUserId } from "./services/tokenConfig";
 import TextField from "@mui/material/TextField";
 import { Button } from "@mui/material";
-import Home from "./Home";
+import Login from "./Login";
 
-function Login() {
+function SignUp() {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(""); // Pour afficher des messages d'erreur
@@ -16,27 +16,27 @@ function Login() {
     e.preventDefault();
 
     urlAPI({
-      url: "/connexion",
+      url: "/inscription",
       method: "POST",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
       data: JSON.stringify({
+        name: name,
         email: email,
         password: password,
       }),
     })
       .then((response) => {
         if (response.data.success) {
-          setToken(response.data.token);
-          setUserId(response.data.user.id);
-          setRedirect(true);
+          setName("");
           setEmail("");
           setPassword("");
+          setRedirect(true);
         } else {
           // Si la connexion échoue, affichez un message d'erreur
-          setError("Adresse email ou mot de passe incorrect.");
+          setError("Remplir tout les champs svp!");
         }
       })
       .catch((error) => {
@@ -46,37 +46,45 @@ function Login() {
 
   return redirect ? (
     <Routes>
-      <Route exact path="/" element={<Home />} />
+      <Route exact path="/connexion" element={<Login />} />
     </Routes>
   ) : (
-    <form onSubmit={handleSubmit} className="loginForm">
+    <form onSubmit={handleSubmit} className="registerForm">
+      <TextField
+        type="text"
+        label="Nom/Prenom"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        className="registerInput"
+      />
       <TextField
         type="email"
         label="Adresse email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-        className="loginInput"
+        className="registerInput"
       />
       <TextField
         type="password"
         label="Mot de passe"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
-        className="loginInput"
+        className="registerInput"
       />
-      <div className="btnLoginContainer">
+      <div className="btnSignUpContainer">
         <Button
           type="submit"
           variant="contained"
           color="primary"
           size="small"
-          className="btnLogin"
+          className="btnSignUp"
         >
           {" "}
-          Se connecter
+          S'inscrire
         </Button>
       </div>
     </form>
   );
 }
-export default Login;
+
+export default SignUp;

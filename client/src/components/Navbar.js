@@ -1,17 +1,28 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import Home from "../Home";
+import Login from "../Login";
+import { getToken } from "../services/tokenConfig";
+import {
+  BrowserRouter as Router,
+  Route,
+  Routes,
+  Navigate,
+} from "react-router-dom";
+import SignUp from "../SignUp";
 
-const Navbar = () => {
+function Navbar() {
+  const [token, setToken] = useState(getToken());
+
   return (
-    <div className="navBar">
-      <div className="connexion">
-        <Link to="/connexion">Connexion</Link>
-      </div>
-      <div className="stocks">
-        <Link to="/">Accueil</Link>
-      </div>
-    </div>
+    <Routes>
+      <Route path="/" element={token ? <Home /> : <Login />} />
+      <Route
+        path="/connexion"
+        element={token ? <Navigate to="/" /> : <Login />}
+      />
+      <Route path="/inscription" element={<SignUp />} />
+    </Routes>
   );
-};
+}
 
 export default Navbar;
