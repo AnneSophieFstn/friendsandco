@@ -1,5 +1,5 @@
 /**
- * Token config file
+ * Token and User Id config file
  */
 
 /**
@@ -18,8 +18,25 @@ exports.getToken = () => {
 };
 
 /**
+ * Set UserId value in localStorage
+ * @param {*} token
+ */
+exports.setUserId = (userId) => {
+  localStorage.setItem("user_id", userId);
+};
+
+/**
+ * Get UserId information from localStorage
+ */
+exports.getUserId = () => {
+  const userIdString = localStorage.getItem("user_id");
+  return parseInt(userIdString, 10);
+};
+
+/**
  * Remove all items in localStorage
  */
-exports.removeToken = () => {
-  localStorage.clear();
+exports.removeTokenAndUserId = () => {
+  localStorage.removeItem("token");
+  localStorage.removeItem("user_id");
 };
