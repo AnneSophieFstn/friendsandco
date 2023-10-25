@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import urlAPI from "./services/axiosConfig";
-import { FaEdit } from "react-icons/fa";
+import { getToken, getUserId } from "./services/tokenConfig";
 
 function Home() {
   const [users, setUser] = useState([]);
@@ -9,18 +9,18 @@ function Home() {
   const [demandesAmisEnvoyer, setDemandesAmisEnvoyer] = useState([]);
   const [amis, setAmis] = useState([]);
 
-  const demandeAmis = (id) => {
+  const demandeAmis = async (id) => {
     urlAPI({
       url: "/demandes",
       method: "POST",
       headers: {
-        Accept: "application/json",
+        Authorization: `Bearer ${getToken()}`,
         "Content-Type": "application/json",
       },
       data: JSON.stringify({
-        id_destinataire_user: 1,
+        id_destinataire_user: getUserId(),
         id_receveur_user: id,
-        statut: "En attente",
+        statut: "Attente",
       }),
     })
       .then((response) => {
@@ -31,24 +31,99 @@ function Home() {
       });
   };
 
+  const accepterDemande = (id, idRec) => {
+    urlAPI({
+      url: "/accepter",
+      method: "PUT",
+      params: {
+        id: id,
+      },
+      headers: {
+        Authorization: `Bearer ${getToken()}`,
+        "Content-Type": "application/json",
+      },
+      data: JSON.stringify({
+        id_destinataire_user: getUserId(),
+        id_receveur_user: idRec,
+        statut: "Amis",
+      }),
+    })
+      .then((response) => {
+        console.log(response);
+        window.location.reload(true);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+  const refuserDemande = (id, idRec) => {
+    urlAPI({
+      url: "/refuser",
+      method: "PUT",
+      params: {
+        id: id,
+      },
+      headers: {
+        Authorization: `Bearer ${getToken()}`,
+        "Content-Type": "application/json",
+      },
+      data: JSON.stringify({
+        id_destinataire_user: getUserId(),
+        id_receveur_user: idRec,
+        statut: "Pas amis",
+      }),
+    })
+      .then((response) => {
+        console.log(response);
+        window.location.reload(true);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
   useEffect(() => {
     const getUser = async () => {
-      const response = await urlAPI.get("/users");
+      const userId = getUserId(); // Obtenez l'ID de l'utilisateur connecté depuis le localStorage
+      const response = await urlAPI.get(`/users-no-friend/${userId}`, {
+        headers: {
+          Authorization: `Bearer ${getToken()}`,
+        },
+      });
       setUser(response.data);
     };
 
     const getDemandeAmisRecu = async () => {
-      const response = await urlAPI.get("/demandes-recu");
+      const userId = getUserId(); // Obtenez l'ID de l'utilisateur connecté depuis le localStorage
+      const response = await urlAPI.get(`/demandes-recu/${userId}`, {
+        headers: {
+          Authorization: `Bearer ${getToken()}`,
+        },
+      });
+      //console.log(`getDemandeAmisRecu: `, response);
+
       setDemandesAmisRecu(response.data);
     };
 
     const getDemandeAmisEnvoye = async () => {
-      const response = await urlAPI.get("/demandes-envoye");
+      const userId = getUserId(); // Obtenez l'ID de l'utilisateur connecté depuis le localStorage
+      const response = await urlAPI.get(`/demandes-envoye/${userId}`, {
+        headers: {
+          Authorization: `Bearer ${getToken()}`,
+        },
+      });
       setDemandesAmisEnvoyer(response.data);
     };
 
     const getAmis = async () => {
-      const response = await urlAPI.get("/amis");
+      const userId = getUserId(); // Obtenez l'ID de l'utilisateur connecté depuis le localStorage
+
+      const response = await urlAPI.get(`/amis/${userId}`, {
+        headers: {
+          Authorization: `Bearer ${getToken()}`,
+        },
+      });
+      console.log("getAmis: ", response);
       setAmis(response.data);
     };
 
@@ -109,8 +184,12 @@ function Home() {
                 <td>{demande.user.name}</td>
                 <td>{demande.statut}</td>
                 <td>
-                  <button onClick={() => console.log(demande.id)}>
-                    Action
+                  <button
+                    onClick={() =>
+                      accepterDemande(demande.id, demande.id_destinataire_user)
+                    }
+                  >
+                    Accepter la demande
                   </button>
                 </td>
               </tr>
@@ -154,7 +233,11 @@ function Home() {
           <tbody>
             {amis.map((amis) => (
               <tr key={amis.id}>
-                <td>{amis.user.name}</td>
+                {amis.id_receveur_user == getUserId() ? (
+                  <td>{amis.Destinataire.name}</td>
+                ) : (
+                  <td>{amis.Receveur.name}</td>
+                )}
                 <td>{amis.statut}</td>
                 <td>
                   <button onClick={() => console.log(amis.id)}>
