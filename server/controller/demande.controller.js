@@ -65,8 +65,6 @@ async function getDemandeAmisRecu(req, res) {
 }
 
 async function getDemandeAmisEnvoyer(req, res) {
-  console.log("getDemandeAmisEnvoyer: ", req.params.id);
-
   const userId = req.params.id;
 
   try {
@@ -110,9 +108,6 @@ async function createDemande(req, res) {
 
 async function accepterDemande(req, res) {
   try {
-    /* console.log(req.params);
-    console.log(req.body);
-    console.log(req.query.id); */
     const accepterDemande = await DemandeModel.update(
       {
         id_destinataire_user: req.body.id_destinataire_user,
@@ -127,20 +122,14 @@ async function accepterDemande(req, res) {
   }
 }
 
-async function refuserDemande(req, res) {
+async function supprimerDemande(req, res) {
   try {
-    /* console.log(req.params);
-    console.log(req.body);
-    console.log(req.query.id); */
-    const refuserDemande = await DemandeModel.update(
-      {
-        id_destinataire_user: req.body.id_destinataire_user,
-        id_receveur_user: req.body.id_receveur_user,
-        statut: req.body.statut,
-      },
-      { where: { id: req.query.id } }
-    );
-    res.status(200).json({ message: "Demande d'amitié refuser avec succès" });
+    const supprimerDemande = await DemandeModel.destroy({
+      where: { id: req.body.id },
+    });
+    res
+      .status(200)
+      .json({ success: true, message: "Demande d'amitié refuser avec succès" });
   } catch (error) {
     console.log(error);
   }
@@ -152,5 +141,5 @@ export {
   getDemandeAmisEnvoyer,
   getAmis,
   accepterDemande,
-  refuserDemande,
+  supprimerDemande,
 };
