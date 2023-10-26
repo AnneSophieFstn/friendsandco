@@ -1,7 +1,12 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import urlAPI from "./services/axiosConfig";
-import { getToken, getUserId } from "./services/tokenConfig";
+import {
+  getToken,
+  getUserId,
+  removeTokenAndUserId,
+} from "./services/tokenConfig";
+import { Button } from "@mui/material";
 
 function Home() {
   const [users, setUser] = useState([]);
@@ -25,6 +30,7 @@ function Home() {
     })
       .then((response) => {
         console.log(response);
+        window.location.reload(true);
       })
       .catch((error) => {
         console.log(error);
@@ -56,30 +62,35 @@ function Home() {
         console.log(error);
       });
   };
-  const refuserDemande = (id, idRec) => {
+  const refuserDemande = (id) => {
     urlAPI({
-      url: "/refuser",
-      method: "PUT",
-      params: {
-        id: id,
-      },
+      url: `/supprimer`,
+      method: "DELETE",
       headers: {
         Authorization: `Bearer ${getToken()}`,
         "Content-Type": "application/json",
       },
       data: JSON.stringify({
-        id_destinataire_user: getUserId(),
-        id_receveur_user: idRec,
-        statut: "Pas amis",
+        id: id,
       }),
     })
       .then((response) => {
-        console.log(response);
-        window.location.reload(true);
+        if (response.data.success) {
+          console.log(response);
+          window.location.reload(true);
+        } else {
+          // Si la connexion échoue, affichez un message d'erreur
+          console.log("Adresse email ou mot de passe incorrect.");
+        }
       })
       .catch((error) => {
         console.log(error);
       });
+  };
+
+  const logout = async () => {
+    removeTokenAndUserId();
+    window.location.reload(true);
   };
 
   useEffect(() => {
@@ -134,6 +145,17 @@ function Home() {
   }, []);
   return (
     <>
+      <Button
+        type="submit"
+        variant="contained"
+        color="primary"
+        size="small"
+        className="btnLogin"
+        onClick={() => logout()}
+      >
+        {" "}
+        DECONNEXION
+      </Button>
       <header>
         <h1>AJOUTER EN AMIS</h1>
       </header>
@@ -240,7 +262,7 @@ function Home() {
                 )}
                 <td>{amis.statut}</td>
                 <td>
-                  <button onClick={() => console.log(amis.id)}>
+                  <button onClick={() => refuserDemande(amis.id)}>
                     Retirer de mes amis
                   </button>
                 </td>
